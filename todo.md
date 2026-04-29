@@ -1,17 +1,30 @@
+# TODO — my-first-web
 
-# Project TODOs
+## 1단계: 기본 구조 (Ch7~8)
 
-- [x] 요청 확인 및 현재 레포 상태 점검
-- [x] 검토: 기존 페이지 맵 수집
-- [x] 보강: App Router URL 구조로 페이지 맵 확장
-- [x] 데이터 모델 설계: 최소 2개 테이블, 1:N 관계 정의
-- [ ] Copilot에게 데이터 모델 요청 및 결과 검토
-- [ ] 와이어프레임 요청: Copilot Vision 또는 v0에 요청할 프롬프트 준비
-- [ ] shadcn/ui 초기화 및 설치
-- [ ] CSS 변수에서 프로젝트 색상 커스터마이즈
-- [ ] 필요한 컴포넌트 추가 (PostList, PostCard, Editor, CommentList 등)
-- [x] 문서화: ARCHITECTURE.md, context.md 업데이트
+- [x] ARCHITECTURE.md 작성
+- [x] copilot-instructions.md 작성
+- [x] shadcn/ui 초기화 + 테마 설정
+- [x] 헤더/푸터 레이아웃
+- [x] 홈 페이지
+- [ ] Supabase 프로젝트 생성
+- [ ] 데이터베이스 스키마 작성
 
-_Last updated: 2026-04-29_
+## 2단계: 핵심 기능 (Ch9~10)
 
+- [x] 포스트 목록 페이지
+- [ ] 포스트 상세 페이지
+- [ ] 포스트 작성 (CRUD)
+- [ ] 로그인/회원가입
 
+- [x] 포스트 목록 페이지
+- [x] 포스트 상세 페이지
+- [ ] 포스트 작성 (CRUD)
+- [ ] 로그인/회원가입
+
+## 3단계: 고급 기능 (Ch11~12)
+
+- [ ] 마이페이지
+- [ ] 댓글 기능
+
+## 진행률: 7/13 (54%)
