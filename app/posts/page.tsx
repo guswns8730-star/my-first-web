@@ -1,8 +1,13 @@
 import PostList from "@/components/PostList";
 import { getPosts } from "@/lib/posts";
+import { fetchPublishedPosts } from "@/lib/postsSupabase";
 
 export default async function PostsPage() {
-  const posts = await getPosts();
+  // Supabase 우선 시도, 실패 시 로컬/외부 폴백
+  let posts = await fetchPublishedPosts();
+  if (!posts || posts.length === 0) {
+    posts = await getPosts();
+  }
 
   return (
     <div className="py-6">

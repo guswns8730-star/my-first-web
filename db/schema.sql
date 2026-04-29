@@ -4,6 +4,25 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- users (authors)
+-- Note: For Supabase it's common to use `auth.users` for authentication
+-- and a separate `profiles` table to store user metadata. Below we
+-- provide a `profiles` table and keep a `users` table example for
+-- non-Supabase setups.
+
+-- profiles (recommended for Supabase projects)
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID PRIMARY KEY,
+  username VARCHAR(100) UNIQUE,
+  name VARCHAR(255),
+  email VARCHAR(255) UNIQUE,
+  bio TEXT,
+  avatar_url TEXT,
+  role VARCHAR(50) NOT NULL DEFAULT 'author',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- legacy users example (kept for reference)
 CREATE TABLE IF NOT EXISTS users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name VARCHAR(255) NOT NULL,
@@ -18,7 +37,8 @@ CREATE TABLE IF NOT EXISTS users (
 -- posts
 CREATE TABLE IF NOT EXISTS posts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  author_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  -- author_id should reference `profiles(id)` for Supabase-auth-backed apps.
+  author_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   title VARCHAR(500) NOT NULL,
   slug VARCHAR(500) NOT NULL UNIQUE,
   summary TEXT,

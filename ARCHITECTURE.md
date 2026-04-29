@@ -55,6 +55,27 @@
 
 위 모델은 간단명료하게 사용자 프로필과 포스트의 1:N 관계를 표현합니다. 필요 시 `status`, `tags`, `comments` 테이블을 확장해 추가 기능(임시저장/게시, 태깅, 댓글 등)을 넣을 수 있습니다.
 
+## 데이터 모델 (간단 버전: `users` 및 `posts`)
+
+교수님 노션에 명시된 기본 요구사항에 맞춰, `profiles` 대신 더 간단한 `users` 테이블과 `posts` 테이블 버전을 명시합니다. 이 모델은 Supabase의 `auth.users`를 사용하지 않는 간단한 경우 또는 교육용 예제로 적합합니다.
+
+#### 테이블: `users`
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid()
+- `email` VARCHAR(255) NOT NULL UNIQUE
+- `name` VARCHAR(255)
+- `avatar_url` TEXT
+- `role` VARCHAR(50) NOT NULL DEFAULT 'user'
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+
+#### 테이블: `posts`
+- `id` UUID PRIMARY KEY DEFAULT gen_random_uuid()
+- `title` VARCHAR(500) NOT NULL
+- `content` TEXT NOT NULL
+- `author_id` UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
+- `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
+
+관계: `users` 1 : `posts` N (각 포스트는 하나의 작성자(user)를 가집니다). 필요 시 `slug`, `status`, `published_at`, `summary`, `tags` 등의 컬럼을 추가하여 확장하세요.
+
 ### 테이블: `comments` (선택)
 - `id` (UUID, PK)
 - `post_id` (UUID, FK → posts.id)
@@ -91,6 +112,34 @@ npm install @shadcn/ui
 # 또는 프로젝트 지침에 따른 설치 스크립트
 ```
 - `components/ui/`의 컴포넌트를 사용하고, 필요한 경우 커스텀 컴포넌트를 `components/`에 추가
+
+## 6.1) 컴포넌트 구조 (shadcn/ui 기준)
+
+아래는 shadcn/ui에서 제공하는 기본 컴포넌트들을 프로젝트 구조에 어떻게 배치하고 사용할지에 대한 설계 지침입니다. 각 컴포넌트는 `components/ui/`의 shadcn 컴포넌트를 우선 사용하고, 프로젝트 특화 로직은 `components/` 폴더에 래핑하여 배치합니다.
+
+- `Button` — 상호작용이 필요한 모든 액션(저장, 삭제, 편집, 목록 이동)에서 사용합니다.
+  - 위치: `components/ui/button.tsx` (shadcn 원본), 래퍼는 `components/Button.tsx`
+  - 스타일: 기본 `variant='default'`, 중요 액션은 `variant='destructive'` 또는 `className='px-4 py-2'`
+
+- `Card` — 포스트 목록의 각 항목, 추천 포스트, 저자 요약 등에 사용합니다.
+  - 위치: `components/ui/card.tsx`, 래퍼 `components/PostCard.tsx`
+  - 내용: 제목, 요약, 메타(작성자, 날짜), 태그(선택)
+
+- `Input` — 검색바, 폼 입력(제목, 요약) 등 단순 입력에 사용합니다.
+  - 위치: `components/ui/input.tsx`, 래퍼 `components/Form/Input.tsx`
+  - 모바일: `w-full`을 기본으로 하여 반응형 보장
+
+- `Dialog` — 삭제 확인, 로그인/회원가입 모달, 포스트 미리보기 등 대화형 모달에 사용합니다.
+  - 위치: `components/ui/dialog.tsx`, 래퍼 `components/Dialog/*`
+  - 접근성: 포커스 트랩과 키보드 내비게이션 지원
+
+- `Card` + `Button` 조합 예시
+  - 포스트 목록: `PostList`가 `PostCard(Card)`들을 렌더링하고, 각 카드 하단에 `Button`(읽기, 편집)이 위치합니다.
+
+컴포넌트 배치 규칙
+- 가능한 경우 shadcn의 시맨틱 컴포넌트를 사용하고, 스타일/행동을 변경할 때만 래퍼를 추가합니다.
+- `components/` 내 래퍼는 props 타입을 명확히 하고 간단한 유틸(UTC→로컬 날짜 포맷 등)을 포함합니다.
+- 모든 상호작용 컴포넌트는 접근성(aria-*), 키보드 네비게이션, 그리고 모바일 뷰 테스트를 거칩니다.
 
 ## 7) CSS 변수: 프로젝트 색상 커스터마이즈 (예시)
 - 파일: `app/globals.css` 또는 전역 CSS
