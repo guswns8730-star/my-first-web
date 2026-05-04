@@ -55,6 +55,25 @@
 
 위 모델은 간단명료하게 사용자 프로필과 포스트의 1:N 관계를 표현합니다. 필요 시 `status`, `tags`, `comments` 테이블을 확장해 추가 기능(임시저장/게시, 태깅, 댓글 등)을 넣을 수 있습니다.
 
+### SQL 예시: `profiles` + `posts` (간단한 DDL)
+
+```sql
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  username TEXT NOT NULL,
+  avatar_url TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
 ## 데이터 모델 (간단 버전: `users` 및 `posts`)
 
 교수님 노션에 명시된 기본 요구사항에 맞춰, `profiles` 대신 더 간단한 `users` 테이블과 `posts` 테이블 버전을 명시합니다. 이 모델은 Supabase의 `auth.users`를 사용하지 않는 간단한 경우 또는 교육용 예제로 적합합니다.
@@ -171,3 +190,111 @@ npm install @shadcn/ui
 ---
 
 _Last updated: 2026-04-29_
+
+## 10) shadcn/ui 컴포넌트 계층 (권장)
+
+프로젝트에서 shadcn/ui를 기본 UI 레이어로 사용하고, 고유 로직은 `components/`에 래핑하여 유지합니다.
+
+- `components/ui/*` — shadcn에서 생성된 원본 컴포넌트(버튼, 카드, 입력 등)
+- `components/*` — 앱 전용 래퍼(예: `PostCard.tsx`, `Header.tsx`, `Editor.tsx`)로 shadcn 컴포넌트를 조합
+- `app/*`의 페이지에서 `components/*`를 사용하여 비즈니스 로직과 UI를 분리
+
+권장 계층 예시:
+
+- `components/ui/button.tsx` (shadcn 원본)
+- `components/Button.tsx` (프로젝트 전역 버튼 래퍼: variant 기본값 등)
+- `components/PostCard.tsx` (Card + Meta + CTA 조합)
+- `components/PostList.tsx` (PostCard 반복 렌더링, 페이징/필터링 담당)
+
+이점: 디자인 토큰과 접근성 규칙을 중앙에서 관리하고, 페이지별 로직은 가볍게 유지할 수 있습니다.
+
+## 11) 디자인 토큰 (권장: `app/globals.css`)
+
+간단한 CSS 변수로 색상/레이디우스/쉐도우를 정의하여 shadcn과 Tailwind의 스타일을 일관되게 유지합니다.
+
+예시 (추가/병합):
+
+```css
+:root {
+  --primary: 220 70% 50%; /* H S L */
+  --primary-foreground: 0 0% 100%;
+  --background: 0 0% 98%;
+  --card: 0 0% 100%;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+}
+```
+
+Tailwind 설정(선택): `tailwind.config.js`에서 `theme.extend`로 토큰을 매핑하거나, shadcn의 CSS 변수와 연동하세요.
+
+## 12) DB 스키마 (명시된 요구: `users`, `posts`, FK 관계)
+
+간단하고 교육용으로 적합한 SQL DDL 예시입니다. Supabase PostgreSQL에 바로 적용 가능합니다.
+
+```sql
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE TABLE IF NOT EXISTS users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  name VARCHAR(255),
+  avatar_url TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'draft', -- draft | published
+  slug TEXT UNIQUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
+설계 노트:
+- 인증을 Supabase Auth로 위임하면 `users` 테이블 대신 Supabase의 `auth.users`를 참조하는 `profiles` 테이블을 사용하는 것이 권장됩니다.
+- 비밀번호 해시를 직접 관리하려면 보안(암호화, 비밀번호 정책, 레이트 리미트)을 추가하세요. Supabase Auth 사용을 권장합니다.
+
+## 13) 인증 (Supabase 이메일/비밀번호)
+
+- 권장 흐름: Supabase Auth(Email/Password)를 사용하여 인증을 처리하고, 추가 프로필 정보는 `profiles` 또는 `users` 테이블에 저장합니다.
+- 클라이언트: `@supabase/supabase-js`를 사용하여 로그인/로그아웃/세션 관리를 구현
+- 서버(앱 라우터): 서버 컴포넌트에서 `cookies()` 또는 Supabase 서버 SDK(서비스 키는 서버 전용)로 인증 확인
+
+핵심 구현 포인트:
+- 회원가입: `supabase.auth.signUp({ email, password })` 후 추가 프로필을 `profiles`에 생성
+- 로그인: `supabase.auth.signInWithPassword({ email, password })`
+- 보호된 페이지: 서버에서 세션 확인, 클라이언트에서는 `useUser()` 같은 헬퍼로 상태 확인
+
+## 14) 페이지별 주요 컴포넌트 및 데이터 흐름
+
+아래는 각 라우트의 주요 컴포넌트와 서버/클라이언트 간 데이터 흐름 요약입니다.
+
+- `/` — 홈 (포스트 목록)
+  - 주요 컴포넌트: `Header`, `SearchBar`, `PostList`, `Footer`
+  - 데이터 흐름: 서버(SSR)에서 최신 공개 포스트를 쿼리(예: Supabase `posts` where status='published') → `PostList`에 전달 → 클라이언트에서 페이징/필터/검색은 API 라우트 또는 클라이언트 검색 호출로 처리
+
+- `/posts` — 포스트 목록
+  - 주요 컴포넌트: `PostList`(내부적으로 `PostCard` 반복), `Pagination`, `TagFilter`
+  - 데이터 흐름: 서버에서 초기 페이지 데이터 로드(SEO) → 클라이언트에서 필터/정렬 시 API 호출 또는 SWR/React Query로 동적 갱신
+
+- `/posts/new` — 포스트 작성
+  - 주요 컴포넌트: `Editor`(제목, content, 태그 입력), `Button`(저장/발행)
+  - 데이터 흐름: 페이지는 보통 `use client`로 작성(편집기 상호작용 필요) → 저장 시 클라이언트가 API 엔드포인트에 POST → 서버는 인증(세션) 확인 후 DB에 insert
+
+- `/posts/[id]` — 포스트 상세
+  - 주요 컴포넌트: `PostDetail`(`article` + `prose`), `AuthorCard`, `Comments`
+  - 데이터 흐름: 서버에서 포스트 로드(SEO 목적으로 SSR) → 렌더링 → 클라이언트는 댓글/상호작용(좋아요 등)을 비동기 API로 처리
+
+공통 패턴:
+- 가능하면 서버에서 초기 데이터를 가져와 SSR/SEO를 지원합니다.
+- 클라이언트 상호작용(편집, 폼, 실시간 업데이트)은 `use client` 컴포넌트로 분리하고, API 라우트 또는 Supabase 클라이언트를 호출합니다.
+
+---
+
+_Last updated: 2026-04-30_

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getPostById } from "@/lib/posts";
-import { fetchPostById } from "@/lib/postsSupabase";
 
 interface PostPageProps {
   params: Promise<{ id: string }>;
@@ -10,11 +9,7 @@ export default async function PostPage({ params }: PostPageProps) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
-  // Supabase 우선 시도, 실패 시 로컬/외부 폴백
-  let post = await fetchPostById(id);
-  if (!post) {
-    post = await getPostById(id);
-  }
+  const post = await getPostById(id);
 
   // 3. 둘 다 없으면 에러 화면 출력
   if (!post) {

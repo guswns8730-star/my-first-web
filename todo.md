@@ -1,30 +1,39 @@
 # TODO — my-first-web
 
-## 1단계: 기본 구조 (Ch7~8)
+# TODO — my-first-web
 
-- [x] ARCHITECTURE.md 작성
-- [x] copilot-instructions.md 작성
-- [x] shadcn/ui 초기화 + 테마 설정
+아래는 앞으로 진행할 주요 작업을 1/2/3 단계로 나눈 체크리스트입니다. 현재 완료된 항목은 체크되어 있으며, 맨 아래에 전체 진행률을 표시합니다.
+
+## 완료된 주요 항목
+- [x] 홈 페이지 (`/`) — 포스트 목록
 - [x] 헤더/푸터 레이아웃
-- [x] 홈 페이지
-- [ ] Supabase 프로젝트 생성
-- [ ] 데이터베이스 스키마 작성
+- [x] 포스트 목록 페이지 (`/posts`) 및 `getPosts` 구현
+- [x] 포스트 상세 페이지 UI 및 `getPostById` 연결
+- [x] shadcn/ui 초기화 및 핵심 primitives 추가 (`components/ui/*`)
+- [x] `ARCHITECTURE.md`, `copilot-instructions.md` 문서 보강
 
-## 2단계: 핵심 기능 (Ch9~10)
+---
 
-- [x] 포스트 목록 페이지
-- [ ] 포스트 상세 페이지
-- [ ] 포스트 작성 (CRUD)
-- [ ] 로그인/회원가입
+## 1단계: Supabase 연결 및 인증 (우선)
+- [ ] Supabase 프로젝트 생성 및 환경변수 설정 (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+- [ ] `lib/supabase.ts` 초기화 및 안전한 폴백 처리
+- [ ] `profiles` 또는 `users` 테이블 스키마 확정 및 `db/schema.sql` 반영
+- [ ] 이메일/비밀번호 기반 인증(가입/로그인) — Supabase Auth 연동
 
-- [x] 포스트 목록 페이지
-- [x] 포스트 상세 페이지
-- [ ] 포스트 작성 (CRUD)
-- [ ] 로그인/회원가입
+## 2단계: 포스트 CRUD 및 미디어
+- [ ] 포스트 작성 페이지 `/posts/new` (리치/마크다운 에디터 포함)
+- [ ] 포스트 생성 API 구현 (POST 엔드포인트, 서버 인증 검증)
+- [ ] 포스트 상세 읽기/수정/삭제 기능 (권한 검사 포함)
+- [ ] 이미지 업로드 및 관리 (Supabase Storage 연동)
 
-## 3단계: 고급 기능 (Ch11~12)
+## 3단계: 계정·개인화·배포
+- [ ] 마이페이지(`/mypage`) — 프로필 편집, 작성글 목록
+- [ ] 로그인/회원가입 UX 개선(이메일 확인, 비밀번호 재설정 등)
+- [ ] 권한/롤 관리 (author/admin)
+- [ ] 댓글 기능 및 추가 메타(태그, 카테고리)
+- [ ] 배포 설정 및 환경(예: Vercel) — 환경변수 적용 확인
 
-- [ ] 마이페이지
-- [ ] 댓글 기능
+---
 
-## 진행률: 7/13 (54%)
+전체 진행률 계산: 총 항목 15개 중 완료 6개 → 진행률: 40%
+
