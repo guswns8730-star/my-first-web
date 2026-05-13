@@ -64,6 +64,23 @@ _문서 마지막 업데이트: 2026-04-30_
 - **보호 라우트**: `middleware.ts`를 사용하여 비로그인 사용자를 `/login`으로 리다이렉트
 - **보안 주의**: service_role 또는 서버 전용 키는 클라이언트에 절대 노출하지 말 것
 
+## Ch9 작업 요약 (반영된 변경)
+
+- **인증 방식**: Supabase Auth 이메일/비밀번호 기반 인증을 사용합니다.
+- **환경변수(필수)**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`를 사용합니다.
+- **Ch8 Supabase CLI 연결 확인**: `npx supabase projects list`, `npx supabase projects api-keys --project-ref <ref>`로 프로젝트 링크와 anon key를 확인하세요.
+- **생성/수정 파일(Ch9)**:
+  - `lib/auth.ts` (로그인/회원가입/로그아웃 래퍼)
+  - `app/login/page.tsx`, `app/signup/page.tsx`
+  - `contexts/AuthContext.tsx` (또는 `components/AuthProvider.tsx`) — `useAuth()` 훅
+  - `components/Header.tsx` (헤더 로그인 상태 분기)
+  - `middleware.ts` (보호 라우트: `/posts/new`)
+- **보호 라우트**: `/posts/new`을 보호하도록 `middleware.ts`에서 비로그인 사용자를 `/login`으로 리다이렉트합니다.
+- **Supabase 대시보드 확인 항목**:
+  - Authentication → Sign In / Providers → Email(활성화 여부)
+  - Authentication → URL Configuration → Site URL, Redirect URLs(필요한 경우)
+
+
 ## 버전 정책
 
 - 교재 기준: Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2

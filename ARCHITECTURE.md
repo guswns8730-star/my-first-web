@@ -271,6 +271,18 @@ CREATE TABLE IF NOT EXISTS posts (
 - 로그인: `supabase.auth.signInWithPassword({ email, password })`
 - 보호된 페이지: 서버에서 세션 확인, 클라이언트에서는 `useUser()` 같은 헬퍼로 상태 확인
 
+### 인증 흐름 (Ch9)
+
+- **시나리오**: `signup` → `login` → `posts` (글쓰기 접근은 로그인 필요)
+- **헤더 상태 분기**:
+  - 비로그인: `로그인`, `회원가입` 링크 표시
+  - 로그인: `새 글 쓰기` 링크(`/posts/new`), `로그아웃` 버튼 표시
+- **보호 라우트 목록**:
+  - `/posts/new` (필수)
+  - (선택) `/mypage` 및 하위 경로 — 프로젝트에서 구현 시 보호 대상에 포함
+
+위 규칙은 Ch9의 목표(이메일/비밀번호 인증, 로그인 상태 전역 공유, 보호 라우트)를 명확히 하기 위한 것입니다.
+
 ### Ch9 구현 규칙 요약
 
 - **교재 기준 버전**: Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2

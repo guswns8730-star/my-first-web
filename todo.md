@@ -22,12 +22,13 @@
 
 ### Ch9 작업 (우선순위 업데이트)
 
-- [ ] `lib/auth.ts` 구현: `signInWithEmail`, `signUpWithEmail`, `signOut`
-- [ ] `contexts/AuthContext.tsx` (또는 `components/AuthProvider.tsx`) 생성 — `useAuth()` 훅 제공
-- [ ] `app/login/page.tsx`, `app/signup/page.tsx` 구현 (간단한 입력/오류 처리/리다이렉트)
-- [ ] `app/layout.tsx`에 `AuthProvider` 연결
-- [ ] `/posts/new` 보호: `middleware.ts`로 비로그인 사용자 리다이렉트
-- [ ] 문서 업데이트: `context.md`, `.github/copilot-instructions.md`, `ARCHITECTURE.md`에 Ch9 규칙 반영
+- [ ] 회원가입 구현 (`app/signup/page.tsx`)
+- [ ] 로그인 구현 (`app/login/page.tsx`)
+- [ ] 로그아웃 구현 (헤더의 `로그아웃` 버튼 및 `lib/auth.ts`)
+- [ ] Header 로그인 상태 분기 (`components/Header.tsx`에 `useAuth()` 연결)
+- [ ] `/posts/new` 보호 (`middleware.ts` 적용 확인)
+- [ ] `npm run build` 검증 (로컬 빌드 통과 확인)
+- [ ] Vercel 배포 URL 및 환경변수 검증 (Production/Preview에 `NEXT_PUBLIC_SUPABASE_*` 적용)
 
 ## 2단계: 포스트 CRUD 및 미디어
 - [ ] 포스트 작성 페이지 `/posts/new` (리치/마크다운 에디터 포함)
