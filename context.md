@@ -53,3 +53,19 @@
 4. 에디터(글쓰기) 페이지에서 저장/발행 워크플로 구현
 
 _문서 마지막 업데이트: 2026-04-30_
+
+## Ch9 교육용 기준 정리
+
+- **교재 기준(권장)**: Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2
+- **환경변수(고정)**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- **인증 방식(이 장)**: 이메일/비밀번호 인증만 사용
+- **라우터 규칙**: App Router만 사용, `next/router` 및 pages router 사용 금지
+- **Auth 호출 규칙**: 클라이언트에서 `signInWithPassword` / `signUp` 사용. 구버전 `auth.signIn()` 사용 금지
+- **보호 라우트**: `middleware.ts`를 사용하여 비로그인 사용자를 `/login`으로 리다이렉트
+- **보안 주의**: service_role 또는 서버 전용 키는 클라이언트에 절대 노출하지 말 것
+
+## 버전 정책
+
+- 교재 기준: Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2
+- 실제 `package.json`이 더 최신일 수 있음 — 설명/프롬프트는 교재 기준으로 통일
+- 빌드/런타임 문제가 버전 차이로 발생하면 `package.json` 기준으로 원인 조사

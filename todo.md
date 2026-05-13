@@ -20,6 +20,15 @@
 - [ ] `profiles` 또는 `users` 테이블 스키마 확정 및 `db/schema.sql` 반영
 - [ ] 이메일/비밀번호 기반 인증(가입/로그인) — Supabase Auth 연동
 
+### Ch9 작업 (우선순위 업데이트)
+
+- [ ] `lib/auth.ts` 구현: `signInWithEmail`, `signUpWithEmail`, `signOut`
+- [ ] `contexts/AuthContext.tsx` (또는 `components/AuthProvider.tsx`) 생성 — `useAuth()` 훅 제공
+- [ ] `app/login/page.tsx`, `app/signup/page.tsx` 구현 (간단한 입력/오류 처리/리다이렉트)
+- [ ] `app/layout.tsx`에 `AuthProvider` 연결
+- [ ] `/posts/new` 보호: `middleware.ts`로 비로그인 사용자 리다이렉트
+- [ ] 문서 업데이트: `context.md`, `.github/copilot-instructions.md`, `ARCHITECTURE.md`에 Ch9 규칙 반영
+
 ## 2단계: 포스트 CRUD 및 미디어
 - [ ] 포스트 작성 페이지 `/posts/new` (리치/마크다운 에디터 포함)
 - [ ] 포스트 생성 API 구현 (POST 엔드포인트, 서버 인증 검증)

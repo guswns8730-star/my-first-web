@@ -48,3 +48,14 @@
 - 글 중심 블로그는 `prose` 클래스 하나로도 충분히 예쁘게 보입니다.
 
 Last updated: 2026-04-29
+
+## Ch9 Supabase Auth 추가 규칙 (교육용)
+
+- **인증 범위**: 이메일/비밀번호 인증만 사용합니다. 소셜 로그인(구글/카카오/네이버 등)은 이 장에서 추가하지 않습니다.
+- **라우터**: App Router만 사용하고 `next/router` 또는 pages router 패턴은 사용하지 않습니다.
+- **Auth 호출**: Supabase Auth의 구버전 `auth.signIn(...)` 호출을 사용하지 말고, `signInWithPassword` 및 `signUp` 패턴을 사용합니다.
+- **환경변수**: Ch8과 동일한 환경변수 이름을 사용합니다: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- **서비스 키**: `service_role` 또는 서버 전용 키는 클라이언트 번들에 절대 넣지 않습니다.
+- **보호 라우트**: 이 교재에서는 보호 라우트 구현을 위해 `middleware.ts`를 사용하도록 권장합니다.
+
+_Note:_ 위 규칙들은 Ch7/Ch8 교재 기준(Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2)에 맞춘 교육용 가이드입니다. 실제 `package.json`의 버전이 다를 경우 빌드 오류 원인은 `package.json` 기준으로 확인하세요.

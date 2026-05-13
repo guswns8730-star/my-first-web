@@ -271,6 +271,17 @@ CREATE TABLE IF NOT EXISTS posts (
 - 로그인: `supabase.auth.signInWithPassword({ email, password })`
 - 보호된 페이지: 서버에서 세션 확인, 클라이언트에서는 `useUser()` 같은 헬퍼로 상태 확인
 
+### Ch9 구현 규칙 요약
+
+- **교재 기준 버전**: Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2
+- **환경변수**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- **클라이언트 인증 API**: `supabase.auth.signInWithPassword({ email, password })`, `supabase.auth.signUp({ email, password, options })`, `supabase.auth.signOut()` 사용
+- **라우터 규칙**: App Router만 사용. `next/router` 및 pages router 사용 금지
+- **보호 라우트 구현**: `middleware.ts`에서 비로그인 사용자를 `/login`으로 리다이렉트
+- **보안**: service_role 및 서버 전용 키는 서버 전용으로 보관. 클라이언트에 노출 금지
+
+위 규칙은 Ch9 학습 목표(이메일/비밀번호 인증, 로그인 상태 전역 공유, `/posts/new` 보호)를 단순하고 일관되게 구현하기 위한 것입니다.
+
 ## 14) 페이지별 주요 컴포넌트 및 데이터 흐름
 
 아래는 각 라우트의 주요 컴포넌트와 서버/클라이언트 간 데이터 흐름 요약입니다.
