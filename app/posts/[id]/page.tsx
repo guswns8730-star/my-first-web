@@ -1,23 +1,39 @@
 import Link from "next/link";
-import { getPostById } from "@/lib/posts";
+import { createClient } from "@supabase/supabase-js";
+import { notFound } from "next/navigation";
 
-interface PostPageProps {
-  params: Promise<{ id: string }>;
-}
+type Post = {
+  id: string;
+  title: string;
+  content: string;
+  created_at: string | null;
+  user_id: string | null;
+};
 
-export default async function PostPage({ params }: PostPageProps) {
-  const resolvedParams = await params;
-  const { id } = resolvedParams;
+export default async function PostPage({ params }: { params: { id: string } }) {
+  const { id } = params;
 
-  const post = await getPostById(id);
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // 3. 둘 다 없으면 에러 화면 출력
-  if (!post) {
+  if (!supabaseUrl || !supabaseKey) {
+    return (
+      <div className="py-20 text-center">환경변수가 설정되어 있지 않습니다.</div>
+    );
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const { data, error } = await supabase
+    .from<Post>("posts")
+    .select("id, title, content, created_at, user_id")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) {
     return (
       <div className="py-20 text-center flex flex-col items-center">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          게시글을 찾을 수 없습니다.
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">게시글을 찾을 수 없습니다.</h1>
         <Link
           href="/posts"
           className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
@@ -28,21 +44,19 @@ export default async function PostPage({ params }: PostPageProps) {
     );
   }
 
+  const post = data;
+
   return (
     <article className="max-w-screen-md py-8">
       <header className="mb-10 pb-6 border-b border-gray-200">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
-          {post.title}
-        </h1>
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-4 leading-tight">{post.title}</h1>
         <div className="text-gray-500">
-          작성일: <time dateTime={post.date}>{post.date}</time>
+          작성일: <time dateTime={post.created_at ?? ""}>{post.created_at ? new Date(post.created_at).toLocaleDateString() : ""}</time>
         </div>
       </header>
 
       <section className="prose prose-lg prose-gray max-w-none mb-12">
-        <p className="text-lg text-gray-700 leading-relaxed">
-          {post.description}
-        </p>
+        <p className="text-lg text-gray-700 leading-relaxed">{post.content}</p>
       </section>
 
       <footer className="mt-12 pt-8 border-t border-gray-100 flex justify-between items-center">
