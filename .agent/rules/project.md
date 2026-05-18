@@ -17,5 +17,5 @@
 - **패키지 버전**: 교재 기준(Ch7·Ch8)과 실제 `package.json` 버전을 함께 명시하세요.
 - **Supabase 클라이언트**: 브라우저/클라이언트 쪽에서는 `lib/supabase/client.ts`를 사용하도록 권장합니다.
 - **인증/컨텍스트**: 전역 인증은 `contexts/AuthContext.tsx`의 `AuthProvider`/`useAuth()`를 통해 접근하도록 요구합니다.
-- **posts 스키마**: Ch8 스키마 컬럼명을 그대로 사용 (`id`, `author_id`, `title`, `slug`, `summary`, `content`(JSONB), `status`, `published_at`, `cover_url`, `created_at`, `updated_at`, `tsv`).
+- **posts 스키마**: Ch8 기준(고정) — `id`, `user_id`, `title`, `content`, `created_at`. `profiles.id`는 `auth.users(id)`를 참조합니다. 컬럼명은 임의 변경하지 마세요.
 - **UI vs 보안**: 수정/삭제 관련 UI는 Ch10에서 구현하지만 권한 검증(실제 보안)은 Ch11 RLS에서 처리됨을 명시하세요.

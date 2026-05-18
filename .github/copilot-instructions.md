@@ -65,7 +65,7 @@ _Note:_ 위 규칙들은 Ch7/Ch8 교재 기준(Next.js 16.2.1, @supabase/supabas
 - **패키지 버전 표기**: 교재 기준: Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2. 현재 설치 기준은 `package.json`을 따릅니다 — 문서에는 항상 "교재 기준"과 "현재 설치 기준"을 함께 병기하세요.
 - **Supabase 클라이언트**: 클라이언트 생성 헬퍼는 `lib/supabase/client.ts`를 사용합니다.
 - **인증/컨텍스트**: 인증 상태는 `contexts/AuthContext.tsx`의 `AuthProvider`와 `useAuth()`를 사용하여 전역으로 관리합니다.
-- **posts 스키마**: Ch8의 DB 스키마 컬럼명을 그대로 사용합니다: `id`, `author_id`, `title`, `slug`, `summary`, `content`(JSONB), `status`, `published_at`, `cover_url`, `created_at`, `updated_at`, `tsv`.
+- **posts 스키마**: Ch8 기준(고정) — `id`, `user_id`, `title`, `content`, `created_at`. `profiles.id`는 `auth.users(id)`를 참조합니다. 컬럼명은 임의 변경하지 마세요.
 - **라우터 규칙**: App Router만 사용합니다. `next/router` 및 pages router 사용은 금지합니다.
 - **수정/삭제 UX vs 보안**: 포스트 수정/삭제 UI는 Ch10에서 구현하되, 실제 권한 검증(보안)은 Ch11에서 RLS로 처리합니다. UI는 UX 관점에서만 구현하세요.
 

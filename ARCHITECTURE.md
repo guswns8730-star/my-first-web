@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS posts (
 - `id` UUID PRIMARY KEY DEFAULT gen_random_uuid()
 - `title` VARCHAR(500) NOT NULL
 - `content` TEXT NOT NULL
-- `author_id` UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
+- `user_id` UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE
 - `created_at` TIMESTAMPTZ NOT NULL DEFAULT now()
 
 관계: `users` 1 : `posts` N (각 포스트는 하나의 작성자(user)를 가집니다). 필요 시 `slug`, `status`, `published_at`, `summary`, `tags` 등의 컬럼을 추가하여 확장하세요.
@@ -109,8 +109,8 @@ CREATE TABLE IF NOT EXISTS posts (
 - `post_tags`: `post_id`, `tag_id` (composite PK)
 
 ### 인덱스 & 고려사항
-- `posts.slug`에 unique 인덱스
-- `posts.author_id` 인덱스 (조회 성능)
+-- `posts.slug`에 unique 인덱스 (선택)
+-- `posts.user_id` 인덱스 (조회 성능)
 - `posts.published_at` 인덱스 (정렬/조회)
 - `full-text` 검색을 위해 `content`에 GIN 인덱스(또는 external search)
 - authentication/authorization: Supabase Auth 또는 다른 provider 권장
@@ -325,7 +325,7 @@ CREATE TABLE IF NOT EXISTS posts (
 - **패키지 버전 표기**: 교재 기준 — Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2. 실제 설치된 버전(`package.json`)과 차이가 날 수 있습니다. 문서에는 항상 "교재 기준"과 "현재 설치 기준"을 병기하세요.
 - **Supabase 클라이언트**: 브라우저/클라이언트용 생성기는 `lib/supabase/client.ts`를 사용합니다. 서버 전용 클라이언트가 필요한 경우 별도 설정을 사용하세요.
 - **인증**: 인증 흐름은 `contexts/AuthContext.tsx`의 `AuthProvider`/`useAuth()`를 전역으로 사용합니다.
-- **posts 스키마(Ch8 기준)**: `id`, `author_id`, `title`, `slug`, `summary`, `content`(JSONB), `status`, `published_at`, `cover_url`, `created_at`, `updated_at`, `tsv` — Ch8 스키마를 그대로 사용합니다.
+- **posts 스키마(Ch8 기준)**: `id`, `user_id`, `title`, `content`, `created_at` — Ch8 기준(고정)입니다. `profiles.id`는 `auth.users(id)`를 참조합니다. 컬럼명은 임의 변경하지 마세요.
 - **라우터 규칙**: App Router만 사용하며 `next/router` 및 pages router 사용을 금지합니다.
 - **수정/삭제 UX vs 보안**: 수정/삭제 UI는 Ch10에서 UX로 구현하되, 실제 권한/보안 검증은 Ch11 RLS로 처리합니다.
 

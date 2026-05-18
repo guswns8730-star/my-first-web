@@ -59,7 +59,7 @@
  - `lib/supabase/client.ts` (브라우저용 Supabase 클라이언트 생성)
  - `lib/auth.ts` (Auth 래퍼 — signIn/signUp/signOut 헬퍼)
  - `contexts/AuthContext.tsx` (`AuthProvider` + `useAuth()`)
- - `db/schema.sql` (Ch8 기준 스키마) — posts 컬럼: `id`, `author_id`, `title`, `slug`, `summary`, `content`(JSONB), `status`, `published_at`, `cover_url`, `created_at`, `updated_at`, `tsv`
+ - `db/schema.sql` (Ch8 기준 스키마) — posts 컬럼: `id`, `user_id`, `title`, `content`, `created_at`. `profiles.id`는 `auth.users(id)`를 참조합니다. 컬럼명은 임의 변경하지 마세요.
 
  ## 최근 발견된 문제 / 주의사항
 
