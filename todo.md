@@ -1,10 +1,8 @@
 # TODO — my-first-web
 
-# TODO — my-first-web
+아래는 Ch8(연결), Ch9(인증), Ch10(포스트 CRUD)을 준비하기 위한 우선순위 TODO 목록입니다. 각 항목은 사람이 확인하고 진행할 수 있도록 구체적으로 작성했습니다.
 
-아래는 앞으로 진행할 주요 작업을 1/2/3 단계로 나눈 체크리스트입니다. 현재 완료된 항목은 체크되어 있으며, 맨 아래에 전체 진행률을 표시합니다.
-
-## 완료된 주요 항목
+## 완료된 항목
 - [x] 홈 페이지 (`/`) — 포스트 목록
 - [x] 헤더/푸터 레이아웃
 - [x] 포스트 목록 페이지 (`/posts`) 및 `getPosts` 구현
@@ -12,38 +10,42 @@
 - [x] shadcn/ui 초기화 및 핵심 primitives 추가 (`components/ui/*`)
 - [x] `ARCHITECTURE.md`, `copilot-instructions.md` 문서 보강
 
----
-
-## 1단계: Supabase 연결 및 인증 (우선)
+## 1단계: Supabase 연결 및 인증 (Ch8 → Ch9)
 - [ ] Supabase 프로젝트 생성 및 환경변수 설정 (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
-- [ ] `lib/supabase.ts` 초기화 및 안전한 폴백 처리
-- [ ] `profiles` 또는 `users` 테이블 스키마 확정 및 `db/schema.sql` 반영
-- [ ] 이메일/비밀번호 기반 인증(가입/로그인) — Supabase Auth 연동
+- [ ] `lib/supabase/client.ts` 존재 및 동작 확인 (브라우저/클라이언트용 생성기)
+- [ ] 서버/배포용 키는 클라이언트에 노출하지 않도록 설정
+- [ ] `db/schema.sql`의 스키마가 Supabase에 적용되었는지 확인 (특히 `posts` 테이블 컬럼)
+- [ ] `lib/auth.ts`에 `signInWithPassword`, `signUp`, `signOut` 래퍼 구현
 
-### Ch9 작업 (우선순위 업데이트)
+### Ch9 핵심 작업
 
-- [ ] 회원가입 구현 (`app/signup/page.tsx`)
-- [ ] 로그인 구현 (`app/login/page.tsx`)
-- [ ] 로그아웃 구현 (헤더의 `로그아웃` 버튼 및 `lib/auth.ts`)
-- [ ] Header 로그인 상태 분기 (`components/Header.tsx`에 `useAuth()` 연결)
-- [ ] `/posts/new` 보호 (`middleware.ts` 적용 확인)
-- [ ] `npm run build` 검증 (로컬 빌드 통과 확인)
-- [ ] Vercel 배포 URL 및 환경변수 검증 (Production/Preview에 `NEXT_PUBLIC_SUPABASE_*` 적용)
+- [ ] 회원가입 페이지 구현 (`app/signup/page.tsx`) — `lib/auth.ts` 사용
+- [ ] 로그인 페이지 구현 (`app/login/page.tsx`) — `lib/auth.ts` 사용
+- [ ] 전역 인증 컨텍스트 완성: `contexts/AuthContext.tsx` (`AuthProvider` 및 `useAuth()` 검증)
+- [ ] 헤더 로그인 상태 분기 구현 (`components/Header.tsx`에 `useAuth()` 연결)
+- [ ] 보호 라우트 적용 확인: `middleware.ts`가 `/posts/new`(또는 보호할 라우트)을 리다이렉트하는지 확인
 
-## 2단계: 포스트 CRUD 및 미디어
-- [ ] 포스트 작성 페이지 `/posts/new` (리치/마크다운 에디터 포함)
-- [ ] 포스트 생성 API 구현 (POST 엔드포인트, 서버 인증 검증)
-- [ ] 포스트 상세 읽기/수정/삭제 기능 (권한 검사 포함)
-- [ ] 이미지 업로드 및 관리 (Supabase Storage 연동)
+## 2단계: 포스트 CRUD 및 미디어 (Ch10)
+- [ ] 포스트 작성 페이지 `/posts/new` 구현 (클라이언트 컴포넌트: 에디터, 미리보기, 저장/발행 버튼)
+- [ ] 포스트 생성 API 구현 (서버 엔드포인트 또는 서버 컴포넌트에서 DB insert)
+- [ ] 포스트 수정 페이지 `/posts/[id]/edit` 구현 (UI) — 권한 검증은 Ch11에서 처리
+- [ ] 포스트 삭제 UI(삭제 확인 모달) 구현 — 실제 권한 검증은 Ch11에서 처리
+- [ ] 이미지 업로드 및 Supabase Storage 연동 (커버 이미지 등)
 
-## 3단계: 계정·개인화·배포
+## 3단계: 계정·개선·배포
 - [ ] 마이페이지(`/mypage`) — 프로필 편집, 작성글 목록
-- [ ] 로그인/회원가입 UX 개선(이메일 확인, 비밀번호 재설정 등)
-- [ ] 권한/롤 관리 (author/admin)
-- [ ] 댓글 기능 및 추가 메타(태그, 카테고리)
-- [ ] 배포 설정 및 환경(예: Vercel) — 환경변수 적용 확인
+- [ ] 인증 UX 개선(이메일 확인, 비밀번호 재설정 등)
+- [ ] 권한/롤 관리 기초(프런트에서의 UX 분기)
+- [ ] 댓글, 태그 등 확장 기능
 
----
+## Ch10 시작 전 검증 항목 (사람 체크리스트)
 
-전체 진행률 계산: 총 항목 15개 중 완료 6개 → 진행률: 40%
+1. `NEXT_PUBLIC_SUPABASE_URL`와 `NEXT_PUBLIC_SUPABASE_ANON_KEY`가 로컬/배포 환경에 설정되어 있는가
+2. `lib/supabase/client.ts`가 존재하며 예외 처리가 되는가
+3. `contexts/AuthContext.tsx`의 `AuthProvider`/`useAuth()`가 로그인/로그아웃을 반영하는가
+4. `db/schema.sql`이 Supabase에 적용되어 `posts` 테이블의 컬럼이 존재하는가
+5. `middleware.ts`가 보호 라우트를 제대로 리다이렉트하는가
+6. `package.json`의 Supabase 관련 버전이 교재 기준과 다르면 문서에 기록했는가
+
+_작성 일자: 2026-05-18_
 

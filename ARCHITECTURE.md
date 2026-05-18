@@ -320,4 +320,20 @@ CREATE TABLE IF NOT EXISTS posts (
 
 ---
 
-_Last updated: 2026-04-30_
+## Ch10 기준 (포스트 CRUD 준비)
+
+- **패키지 버전 표기**: 교재 기준 — Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2. 실제 설치된 버전(`package.json`)과 차이가 날 수 있습니다. 문서에는 항상 "교재 기준"과 "현재 설치 기준"을 병기하세요.
+- **Supabase 클라이언트**: 브라우저/클라이언트용 생성기는 `lib/supabase/client.ts`를 사용합니다. 서버 전용 클라이언트가 필요한 경우 별도 설정을 사용하세요.
+- **인증**: 인증 흐름은 `contexts/AuthContext.tsx`의 `AuthProvider`/`useAuth()`를 전역으로 사용합니다.
+- **posts 스키마(Ch8 기준)**: `id`, `author_id`, `title`, `slug`, `summary`, `content`(JSONB), `status`, `published_at`, `cover_url`, `created_at`, `updated_at`, `tsv` — Ch8 스키마를 그대로 사용합니다.
+- **라우터 규칙**: App Router만 사용하며 `next/router` 및 pages router 사용을 금지합니다.
+- **수정/삭제 UX vs 보안**: 수정/삭제 UI는 Ch10에서 UX로 구현하되, 실제 권한/보안 검증은 Ch11 RLS로 처리합니다.
+
+## Ch10 시작 전 확인 목록 (간단)
+
+- 환경변수: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` 설정 여부
+- `lib/supabase/client.ts`와 `contexts/AuthContext.tsx`(AuthProvider/useAuth) 동작 확인
+- `db/schema.sql` 기반 마이그레이션 적용 여부(특히 `posts` 컬럼 일치 확인)
+- `middleware.ts`가 보호 라우트를 올바르게 처리하는지 확인
+
+_Last updated: 2026-05-18_

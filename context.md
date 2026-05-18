@@ -21,68 +21,68 @@
   - 마이페이지(`/mypage`), 로그인/회원가입 UI(페이지는 아직 구현 예정)
   - Supabase 연동(환경변수 설정 및 서비스 연결)은 다음 챕터(Ch8)에서 진행 예정
 
-## 기술 결정 사항
+ # Context — my-first-web 프로젝트 상태
 
-- 프레임워크: Next.js 16 (App Router, Server Components 우선)
-- 스타일: Tailwind CSS 4 + Tailwind Typography(`prose`) 권장
-- UI primitives: shadcn/ui (원본은 `components/ui/`, 앱 래퍼는 `components/`에 배치)
-- 데이터베이스: PostgreSQL (Supabase 권장)
-- 인증: Supabase Auth (이메일/비밀번호) — 세션 관리는 Supabase SDK
-- 상태관리: React Context (AuthProvider 패턴 권장)
-- 이미지/파일: Supabase Storage 사용 예정
+ ## 현재 요약
 
-## 중요한 구현/구성 파일
+ - 프로젝트: 개인 블로그 템플릿 (Next.js App Router + Tailwind CSS + shadcn/ui + Supabase 연동)
+ - 진행 상황(요약): 홈, 헤더/푸터, 포스트 목록/상세 페이지 UI는 구현되어 있고 데이터 연동은 `lib/posts.ts` 및 샘플 데이터로 동작합니다. Supabase 연결은 Ch8/Ch9 작업으로 점진 반영됩니다.
 
-- 데이터 페칭 헬퍼: `lib/posts.ts` (`getPosts`, `getPostById`)
-- 초기 DB DDL 샘플: `db/schema.sql` (users/posts/tags 등 포함)
-- shadcn 원본 컴포넌트: `components/ui/*`
-- 앱 레이아웃: `app/layout.tsx`, 전역 스타일: `app/globals.css`
-- 아키텍처 문서: `ARCHITECTURE.md`
-- 개발 가이드: `copilot-instructions.md`
+ ## 상세 상태
 
-## 최근 발견된 문제 / 주의사항
+ - 완료:
+   - 홈 페이지 (`/`) — 포스트 목록
+   - 헤더/푸터 레이아웃
+   - 포스트 목록/상세 UI (`/posts`, `/posts/[id]`)
+   - shadcn/ui 초기 컴포넌트 구성 (`components/ui/*`)
+   - `contexts/AuthContext.tsx`(AuthProvider/`useAuth`) 초기 구현
 
-- 개발 서버에서 Supabase 관련 코드가 import 될 때 환경변수(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) 미설정으로 오류가 발생할 수 있습니다. 현재는 Supabase 연동을 다음 단계로 미루고, 로컬 더미/외부 API(JSONPlaceholder) 폴백을 사용하여 개발 가능한 상태입니다.
-- App Router 프로젝트에서는 `pages/` 패턴 또는 `next/router` 사용 금지 — Server/Client 컴포넌트 경계, `use client` 남용에 유의하세요.
+ - 진행/완료 직전:
+   - Supabase 클라이언트: `lib/supabase/client.ts` 생성(브라우저용)
+   - 인증/세션 흐름: `contexts/AuthContext.tsx`에서 `createBrowserSupabase()` 사용해 상태 구독
 
-## 다음 권장 단계
+ - 미완/보류:
+   - Supabase 프로젝트 연결 및 마이그레이션 적용
+   - 완전한 로그인/회원가입(이메일/비밀번호) 플로우의 E2E 검증
+   - 포스트 생성/수정/삭제의 권한 검증은 Ch11(RLS)에서 완료
 
-1. Ch8에서 Supabase 프로젝트 생성 및 환경변수 설정
-2. 인증(이메일/비밀번호)과 `profiles` 또는 `users` 테이블 연동
-3. 로그인/회원가입 및 마이페이지 구현
-4. 에디터(글쓰기) 페이지에서 저장/발행 워크플로 구현
+ ## 기술 결정 사항
 
-_문서 마지막 업데이트: 2026-04-30_
+ - 프레임워크: Next.js 16 (App Router, Server Components 우선)
+ - 스타일: Tailwind CSS 4 + Tailwind Typography(`prose`)
+ - UI primitives: shadcn/ui
+ - 데이터베이스: PostgreSQL (Supabase 권장)
+ - 인증: Supabase Auth (이메일/비밀번호) — `contexts/AuthContext.tsx`의 `AuthProvider`/`useAuth()` 사용
 
-## Ch9 교육용 기준 정리
+ ## 중요한 구현/구성 파일
 
-- **교재 기준(권장)**: Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2
-- **환경변수(고정)**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- **인증 방식(이 장)**: 이메일/비밀번호 인증만 사용
-- **라우터 규칙**: App Router만 사용, `next/router` 및 pages router 사용 금지
-- **Auth 호출 규칙**: 클라이언트에서 `signInWithPassword` / `signUp` 사용. 구버전 `auth.signIn()` 사용 금지
-- **보호 라우트**: `middleware.ts`를 사용하여 비로그인 사용자를 `/login`으로 리다이렉트
-- **보안 주의**: service_role 또는 서버 전용 키는 클라이언트에 절대 노출하지 말 것
+ - `lib/supabase/client.ts` (브라우저용 Supabase 클라이언트 생성)
+ - `lib/auth.ts` (Auth 래퍼 — signIn/signUp/signOut 헬퍼)
+ - `contexts/AuthContext.tsx` (`AuthProvider` + `useAuth()`)
+ - `db/schema.sql` (Ch8 기준 스키마) — posts 컬럼: `id`, `author_id`, `title`, `slug`, `summary`, `content`(JSONB), `status`, `published_at`, `cover_url`, `created_at`, `updated_at`, `tsv`
 
-## Ch9 작업 요약 (반영된 변경)
+ ## 최근 발견된 문제 / 주의사항
 
-- **인증 방식**: Supabase Auth 이메일/비밀번호 기반 인증을 사용합니다.
-- **환경변수(필수)**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`를 사용합니다.
-- **Ch8 Supabase CLI 연결 확인**: `npx supabase projects list`, `npx supabase projects api-keys --project-ref <ref>`로 프로젝트 링크와 anon key를 확인하세요.
-- **생성/수정 파일(Ch9)**:
-  - `lib/auth.ts` (로그인/회원가입/로그아웃 래퍼)
-  - `app/login/page.tsx`, `app/signup/page.tsx`
-  - `contexts/AuthContext.tsx` (또는 `components/AuthProvider.tsx`) — `useAuth()` 훅
-  - `components/Header.tsx` (헤더 로그인 상태 분기)
-  - `middleware.ts` (보호 라우트: `/posts/new`)
-- **보호 라우트**: `/posts/new`을 보호하도록 `middleware.ts`에서 비로그인 사용자를 `/login`으로 리다이렉트합니다.
-- **Supabase 대시보드 확인 항목**:
-  - Authentication → Sign In / Providers → Email(활성화 여부)
-  - Authentication → URL Configuration → Site URL, Redirect URLs(필요한 경우)
+ - Supabase 관련 환경변수(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) 미설정 시 서버/브라우저에서 에러 발생 가능. 로컬에서 개발할 때는 환경변수 또는 안전한 폴백을 설정하세요.
+ - App Router 프로젝트에서는 `next/router` 또는 `pages/` 패턴 사용 금지 — Server/Client 컴포넌트 경계를 지켜 `use client` 남용을 피하세요.
 
+ ## Ch10 준비(포스트 CRUD) — 체크리스트 및 기준
 
-## 버전 정책
+ - 패키지 버전 표기: 교재 기준 — Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2. 현재 설치 기준(실제 `package.json`): `@supabase/supabase-js` ^2.105.1, `@supabase/ssr` ^0.10.2, `next` 16.2.1. 문서/학습 시에는 항상 "교재 기준"과 "현재 설치 기준"을 병기하세요.
+ - Supabase 클라이언트: `lib/supabase/client.ts` 사용 (브라우저), 서버 사이드가 필요하면 서버 전용 클라이언트 또는 Supabase 서버 SDK 사용.
+ - 인증: `contexts/AuthContext.tsx`의 `AuthProvider`와 `useAuth()`를 앱 전역 인증 흐름으로 사용합니다.
+ - posts 테이블 컬럼: Ch8 스키마를 그대로 사용하세요(위 `db/schema.sql` 참조).
+ - 라우터: App Router만 사용하며 `next/router` 사용 금지.
+ - 수정/삭제 UI는 Ch10에서 UX로 구현하되, 실제 권한/보안 검증은 Ch11 RLS에서 처리합니다.
 
-- 교재 기준: Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2
-- 실제 `package.json`이 더 최신일 수 있음 — 설명/프롬프트는 교재 기준으로 통일
+ ## Ch10 시작 전 사람이 확인할 항목
+
+ 1. `NEXT_PUBLIC_SUPABASE_URL` 및 `NEXT_PUBLIC_SUPABASE_ANON_KEY` 환경변수가 로컬/배포 환경에 설정되어 있는지 확인
+ 2. `lib/supabase/client.ts` 파일 존재 및 올바른 에러 처리가 구현되어 있는지 확인
+ 3. `contexts/AuthContext.tsx`의 `AuthProvider`/`useAuth()` 동작 확인(로그인/로그아웃 흐름)
+ 4. DB 마이그레이션(`db/schema.sql`)이 Supabase에 적용되어 있는지 확인(특히 `posts` 테이블 컬럼)
+ 5. `middleware.ts`가 보호 라우트(`/posts/new`)를 올바르게 리다이렉트하는지 확인
+ 6. `package.json`의 Supabase 관련 버전(교재 기준과의 차이)을 문서화하고 빌드/런타임 테스트를 준비
+
+ _문서 마지막 업데이트: 2026-05-18_
 - 빌드/런타임 문제가 버전 차이로 발생하면 `package.json` 기준으로 원인 조사

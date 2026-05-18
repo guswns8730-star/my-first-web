@@ -27,10 +27,10 @@
 
 ### 디자인 토큰 (app/globals.css에 추가)
 :root {
-	--primary: 220 70% 50%;
-	--primary-foreground: 0 0% 100%;
-	--background: 0 0% 98%;
-	--card: 0 0% 100%;
+  --primary: 220 70% 50%;
+  --primary-foreground: 0 0% 100%;
+  --background: 0 0% 98%;
+  --card: 0 0% 100%;
 }
 
 ### 접근성/가독성 체크리스트
@@ -47,7 +47,7 @@
 - Tailwind 클래스가 낯설면 먼저 `Card`, `Button`, `Input` 같은 shadcn/ui 컴포넌트를 사용하세요. shadcn 컴포넌트는 시맨틱한 기본 스타일을 제공합니다.
 - 글 중심 블로그는 `prose` 클래스 하나로도 충분히 예쁘게 보입니다.
 
-Last updated: 2026-04-29
+Last updated: 2026-05-18
 
 ## Ch9 Supabase Auth 추가 규칙 (교육용)
 
@@ -59,3 +59,14 @@ Last updated: 2026-04-29
 - **보호 라우트**: 이 교재에서는 보호 라우트 구현을 위해 `middleware.ts`를 사용하도록 권장합니다.
 
 _Note:_ 위 규칙들은 Ch7/Ch8 교재 기준(Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2)에 맞춘 교육용 가이드입니다. 실제 `package.json`의 버전이 다를 경우 빌드 오류 원인은 `package.json` 기준으로 확인하세요.
+
+## Ch10 기준 (포스트 CRUD 준비)
+
+- **패키지 버전 표기**: 교재 기준: Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2. 현재 설치 기준은 `package.json`을 따릅니다 — 문서에는 항상 "교재 기준"과 "현재 설치 기준"을 함께 병기하세요.
+- **Supabase 클라이언트**: 클라이언트 생성 헬퍼는 `lib/supabase/client.ts`를 사용합니다.
+- **인증/컨텍스트**: 인증 상태는 `contexts/AuthContext.tsx`의 `AuthProvider`와 `useAuth()`를 사용하여 전역으로 관리합니다.
+- **posts 스키마**: Ch8의 DB 스키마 컬럼명을 그대로 사용합니다: `id`, `author_id`, `title`, `slug`, `summary`, `content`(JSONB), `status`, `published_at`, `cover_url`, `created_at`, `updated_at`, `tsv`.
+- **라우터 규칙**: App Router만 사용합니다. `next/router` 및 pages router 사용은 금지합니다.
+- **수정/삭제 UX vs 보안**: 포스트 수정/삭제 UI는 Ch10에서 구현하되, 실제 권한 검증(보안)은 Ch11에서 RLS로 처리합니다. UI는 UX 관점에서만 구현하세요.
+
+_마지막 업데이트: 2026-05-18_
