@@ -25,7 +25,7 @@ export default async function PostPage({ params }: { params: { id: string } }) {
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   const { data, error } = await supabase
-    .from<Post>("posts")
+    .from("posts")
     .select("id, title, content, created_at, user_id")
     .eq("id", id)
     .single();

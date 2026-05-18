@@ -1,13 +1,10 @@
-import { createBrowserClient } from '@supabase/ssr'
+import { createBrowserClient } from "@supabase/ssr";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY')
+export function createClient() {
+  // @supabase/ssr의 createBrowserClient를 사용하여
+  // 브라우저 환경 전용 클라이언트를 생성합니다.
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
 }
-
-export const createBrowserSupabase = () =>
-  createBrowserClient(supabaseUrl, supabaseAnonKey)
-
-export default createBrowserSupabase
