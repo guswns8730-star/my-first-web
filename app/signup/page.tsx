@@ -1,86 +1,114 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { signUpWithEmail } from "../../lib/auth"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signUpWithEmail } from "@/lib/auth";
 
 export default function SignupPage() {
-  const router = useRouter()
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
+  const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
-    setMessage(null)
-    setLoading(true)
-    try {
-      const res = await signUpWithEmail(email, password, name)
-      if (res.error) {
-        setError(res.error.message)
-        setLoading(false)
-        return
-      }
-      // 회원가입 성공: /login으로 이동
-      router.push("/login")
-    } catch (err: any) {
-      setError(err?.message || "회원가입 중 오류가 발생했습니다.")
-    } finally {
-      setLoading(false)
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg("");
+    setSuccessMsg("");
+
+    if (!name || !email || !password) {
+      setErrorMsg("이름, 이메일, 비밀번호를 모두 입력해주세요.");
+      return;
     }
-  }
+
+    setLoading(true);
+    const { error } = await signUpWithEmail(email, password, name);
+    setLoading(false);
+
+    if (error) {
+      setErrorMsg(error.message); // 실패 시 화면에 에러 표시
+    } else {
+      setSuccessMsg("가입 완료. 로그인 페이지로 이동합니다."); // 성공 메시지 표시
+      setTimeout(() => {
+        router.push("/login"); // 성공하면 /login으로 이동
+      }, 1500); 
+    }
+  };
 
   return (
-    <div className="max-w-md mx-auto mt-20">
-      <h1 className="text-2xl font-semibold mb-4">회원가입</h1>
-      <form onSubmit={onSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">이름</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>
+    <div className="max-w-md mx-auto py-20 px-4">
+      <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-6 text-center">회원가입</h1>
+        
+        <form onSubmit={handleSignup} className="space-y-6">
+          {errorMsg && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-medium border border-red-200 text-center animate-pulse">
+              {errorMsg}
+            </div>
+          )}
+          {successMsg && (
+            <div className="bg-green-50 text-green-700 p-3 rounded-lg text-sm font-medium border border-green-200 text-center">
+              {successMsg}
+            </div>
+          )}
 
-        <div>
-          <label className="block text-sm font-medium mb-1">이메일</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>
+          <div>
+            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+              이름 (닉네임)
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="이름을 입력하세요"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 hover:bg-white"
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-1">비밀번호</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>
+          <div>
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+              이메일
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="example@email.com"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 hover:bg-white"
+            />
+          </div>
 
-        {error && <div className="text-sm text-red-600">{error}</div>}
-        {message && <div className="text-sm text-green-600">{message}</div>}
+          <div>
+            <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+              비밀번호
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="최소 6자 이상의 비밀번호"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors bg-gray-50 hover:bg-white"
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-green-600 text-white py-2 rounded"
-        >
-          {loading ? "처리 중..." : "회원가입"}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 mt-4 rounded-lg text-white font-semibold transition-all ${
+              loading 
+              ? "bg-blue-400 cursor-not-allowed" 
+              : "bg-blue-600 hover:bg-blue-700 active:scale-[0.98] shadow-sm hover:shadow"
+            }`}
+          >
+            {loading ? "가입 처리 중..." : "회원가입 하기"}
+          </button>
+        </form>
+      </div>
     </div>
-  )
+  );
 }

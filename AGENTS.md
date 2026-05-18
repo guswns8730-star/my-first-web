@@ -13,6 +13,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 	- 보호 라우트는 `middleware.ts`로 구현합니다.
 
 _참고_: 교육용 가이드라인이므로 실제 `package.json` 버전이 다를 수 있습니다. 버전 충돌이 의심되면 `package.json` 기준으로 수정 제안을 합니다.
+## Version Policy
+
+- 교재 기준: Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2
+- 실제 package.json이 더 최신일 수 있다.
+- 수업 프롬프트와 설명은 교재 기준으로 통일한다.
+- 빌드 오류가 버전 차이에서 발생하면 package.json 기준으로 원인을 확인한다.
+
 ## Ch10 에이전트 추가 규칙 (포스트 CRUD 준비)
 
 - **패키지 버전 표기**: 교재 기준과 현재 설치 기준(실제 `package.json`)을 모두 문서화하세요.

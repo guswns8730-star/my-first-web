@@ -60,6 +60,13 @@ Last updated: 2026-05-18
 
 _Note:_ 위 규칙들은 Ch7/Ch8 교재 기준(Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2)에 맞춘 교육용 가이드입니다. 실제 `package.json`의 버전이 다를 경우 빌드 오류 원인은 `package.json` 기준으로 확인하세요.
 
+## Version Policy
+
+- 교재 기준: Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2
+- 실제 package.json이 더 최신일 수 있다.
+- 수업 프롬프트와 설명은 교재 기준으로 통일한다.
+- 빌드 오류가 버전 차이에서 발생하면 package.json 기준으로 원인을 확인한다.
+
 ## Ch10 기준 (포스트 CRUD 준비)
 
 - **패키지 버전 표기**: 교재 기준: Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2. 현재 설치 기준은 `package.json`을 따릅니다 — 문서에는 항상 "교재 기준"과 "현재 설치 기준"을 함께 병기하세요.

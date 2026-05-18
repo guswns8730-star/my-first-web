@@ -66,6 +66,13 @@
  - Supabase 관련 환경변수(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`) 미설정 시 서버/브라우저에서 에러 발생 가능. 로컬에서 개발할 때는 환경변수 또는 안전한 폴백을 설정하세요.
  - App Router 프로젝트에서는 `next/router` 또는 `pages/` 패턴 사용 금지 — Server/Client 컴포넌트 경계를 지켜 `use client` 남용을 피하세요.
 
+ ## Version Policy
+
+ - 교재 기준: Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2
+ - 실제 package.json이 더 최신일 수 있다.
+ - 수업 프롬프트와 설명은 교재 기준으로 통일한다.
+ - 빌드 오류가 버전 차이에서 발생하면 package.json 기준으로 원인을 확인한다.
+
  ## Ch10 준비(포스트 CRUD) — 체크리스트 및 기준
 
  - 패키지 버전 표기: 교재 기준 — Next.js 16.2.1, `@supabase/supabase-js` 2.47.12, `@supabase/ssr` 0.5.2. 현재 설치 기준(실제 `package.json`): `@supabase/supabase-js` ^2.105.1, `@supabase/ssr` ^0.10.2, `next` 16.2.1. 문서/학습 시에는 항상 "교재 기준"과 "현재 설치 기준"을 병기하세요.
