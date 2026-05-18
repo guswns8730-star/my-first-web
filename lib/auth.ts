@@ -1,4 +1,4 @@
-import createBrowserSupabase from './supabase/client'
+import { createClient as createBrowserSupabase } from './supabase/client'
 
 /**
  * Supabase 인증 래퍼 유틸

@@ -21,7 +21,7 @@ export default async function PostsPage() {
 
   try {
     const { data, error } = await supabase
-      .from<Post>("posts")
+      .from("posts")
       .select("id, title, content, created_at, user_id")
       .order("created_at", { ascending: false });
 
