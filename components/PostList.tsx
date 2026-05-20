@@ -16,11 +16,12 @@ export default function PostList({ initialPosts }: PostListProps) {
   const filteredPosts = posts.filter(
     (post) =>
       post.title.toLowerCase().includes(keyword.toLowerCase()) ||
-      post.description.toLowerCase().includes(keyword.toLowerCase())
+      post.content.toLowerCase().includes(keyword.toLowerCase())
   );
 
   const handleDelete = (id: string) => {
     if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+      // 실제 프로젝트에서는 여기서 Supabase 삭제 요청을 보내야 함 (Ch10)
       setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
     }
   };
@@ -31,7 +32,7 @@ export default function PostList({ initialPosts }: PostListProps) {
       
       {filteredPosts.length === 0 ? (
         <div className="text-center py-20 text-gray-400">
-          <p className="text-lg">검색어와 일치하는 게시글이 없습니다.</p>
+          <p className="text-lg">검색어와 일치하는 게시글이 없습니다. 첫 글을 작성해 보세요!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -57,12 +58,12 @@ export default function PostList({ initialPosts }: PostListProps) {
               
               <Link href={`/posts/${post.id}`} className="flex-grow flex flex-col">
                 <p className="text-gray-600 mb-6 flex-grow line-clamp-3 leading-relaxed">
-                  {post.description}
+                  {post.content}
                 </p>
                 <div className="text-sm font-medium text-gray-400 mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <span>{post.date}</span>
+                  <span>{new Date(post.created_at).toLocaleDateString()}</span>
                   <span className="opacity-0 group-hover:opacity-100 transition-opacity text-blue-500">
-                    자세히 보기 →
+                    {post.profiles?.username || '익명'} · 자세히 보기 →
                   </span>
                 </div>
               </Link>

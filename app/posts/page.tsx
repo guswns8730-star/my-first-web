@@ -1,54 +1,21 @@
-import Link from "next/link";
-import { createClient } from "@supabase/supabase-js";
+import { getPosts } from "@/lib/posts";
+import PostList from "@/components/PostList";
 
-type Post = {
-  id: string;
-  title: string;
-  content: string;
-  created_at: string | null;
-  user_id: string | null;
-};
+export const dynamic = "force-dynamic";
 
 export default async function PostsPage() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const posts = await getPosts();
 
-  if (!supabaseUrl || !supabaseKey) {
-    return <div className="py-6">환경변수가 설정되어 있지 않습니다.</div>;
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
-  try {
-    const { data, error } = await supabase
-      .from("posts")
-      .select("id, title, content, created_at, user_id")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      return <div className="py-6">오류: {error.message}</div>;
-    }
-
-    if (!data || data.length === 0) {
-      return <div className="py-6">게시글이 없습니다.</div>;
-    }
-
-    return (
-      <div className="py-6">
-        <ul className="space-y-4">
-          {data.map((p) => (
-            <li key={p.id} className="p-4 border rounded">
-              <Link href={`/posts/${p.id}`} className="text-lg font-semibold text-blue-600 hover:underline">
-                {p.title}
-              </Link>
-              <div className="text-sm text-gray-600">{p.created_at ? new Date(p.created_at).toLocaleDateString() : ""}</div>
-              <p className="mt-2 text-gray-700 line-clamp-3">{p.content}</p>
-            </li>
-          ))}
-        </ul>
+  return (
+    <div className="py-6">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">블로그 포스트</h1>
+          <p className="text-gray-500 mt-1">Supabase와 함께하는 최신 소식들</p>
+        </div>
       </div>
-    );
-  } catch (e: any) {
-    return <div className="py-6">오류가 발생했습니다.</div>;
-  }
+      
+      <PostList initialPosts={posts} />
+    </div>
+  );
 }
