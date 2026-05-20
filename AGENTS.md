@@ -6,24 +6,23 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Ch9 에이전트 가이드 (Supabase Auth 작업용)
 
-	- App Router 기준(Next.js 16.2.1)으로 코드를 작성합니다.
-	- 인증은 이메일/비밀번호만 사용합니다. 소셜 로그인은 추가하지 않습니다.
-	- Supabase 호출은 `signInWithPassword`, `signUp`, `signOut` 패턴을 사용합니다. 구버전 `auth.signIn()` 호출은 금지합니다.
-	- 환경변수 이름(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)을 그대로 사용합니다.
-	- 보호 라우트는 `middleware.ts`로 구현합니다.
+- App Router 기준(Next.js 16.2.1)으로 코드를 작성합니다.
+- 인증은 이메일/비밀번호만 사용합니다. 소셜 로그인은 추가하지 않습니다.
+- Supabase 호출은 `signInWithPassword`, `signUp`, `signOut` 패턴을 사용합니다. 구버전 `auth.signIn()` 호출은 금지합니다.
+- 환경변수 이름(`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`)을 그대로 사용합니다.
+- 보호 라우트는 `middleware.ts`로 구현합니다.
 
-_참고_: 교육용 가이드라인이므로 실제 `package.json` 버전이 다를 수 있습니다. 버전 충돌이 의심되면 `package.json` 기준으로 수정 제안을 합니다.
+## Ch10 에이전트 추가 규칙 (포스트 CRUD 완료)
+
+- **데이터 모델 규정**: `posts` 테이블의 컬럼명(`id`, `user_id`, `title`, `content`, `created_at`)을 절대 임의로 변경하지 않습니다.
+- **Supabase 클라이언트**: `lib/supabase/client.ts` (브라우저), `lib/supabase/server.ts` (서버)를 구분하여 사용합니다.
+- **보안 규정**: 화면 단의 수정/삭제 버튼 노출 분기는 UX일 뿐이며, 실제 보안은 Ch11에서 RLS 정책을 통해 완성해야 함을 명시합니다.
+- **라우터**: `next/router` 사용 금지, `next/navigation` 사용.
+- **패키지 버전**: 교재 기준(`next` 16.2.1, `@supabase/ssr` 0.5.2)과 현재 설치 버전을 모두 인지하고 작업합니다.
+
 ## Version Policy
 
 - 교재 기준: Next.js 16.2.1, @supabase/supabase-js 2.47.12, @supabase/ssr 0.5.2
 - 실제 package.json이 더 최신일 수 있다.
 - 수업 프롬프트와 설명은 교재 기준으로 통일한다.
 - 빌드 오류가 버전 차이에서 발생하면 package.json 기준으로 원인을 확인한다.
-
-## Ch10 에이전트 추가 규칙 (포스트 CRUD 준비)
-
-- **패키지 버전 표기**: 교재 기준과 현재 설치 기준(실제 `package.json`)을 모두 문서화하세요.
-- **Supabase 클라이언트**: 코드에서 브라우저/클라이언트용 Supabase는 `lib/supabase/client.ts`를 사용하도록 권장합니다.
-- **인증 상태**: `contexts/AuthContext.tsx`의 `AuthProvider`와 `useAuth()`를 통해 인증 상태를 참조하세요.
-- **posts 스키마 준수**: Ch8 기준(고정) — `id`, `user_id`, `title`, `content`, `created_at`. `profiles.id`는 `auth.users(id)`를 참조합니다. 컬럼명은 임의 변경하지 마세요.
-- **라우터/보안 규칙**: App Router만 사용하고 `next/router`를 사용하지 마세요. 수정/삭제 관련 UI는 Ch10에서 UX로 구현하되 권한 검증은 Ch11에서 RLS로 적용될 예정임을 명확히 하세요.
