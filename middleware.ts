@@ -40,7 +40,10 @@ export async function middleware(request: NextRequest) {
   // 서버 사이드에서 안전하게 세션을 확인합니다.
   const { data } = await supabase.auth.getUser();
 
-  const isProtectedPath = request.nextUrl.pathname.startsWith("/posts/new");
+  const pathname = request.nextUrl.pathname;
+  const isProtectedPath = 
+    pathname.startsWith("/posts/new") || 
+    pathname.includes("/edit");
 
   // 유저가 없고 보호된 경로에 접근할 경우 로그인 페이지로 리다이렉트
   if (!data.user && isProtectedPath) {

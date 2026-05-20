@@ -4,12 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import SearchBar from "./SearchBar";
 import type { Post } from "@/lib/posts";
+import { useAuth } from "@/contexts/AuthContext";
+import { createClient } from "@/lib/supabase/client";
 
 interface PostListProps {
   initialPosts: Post[];
 }
 
 export default function PostList({ initialPosts }: PostListProps) {
+  const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [keyword, setKeyword] = useState("");
 
@@ -19,9 +22,21 @@ export default function PostList({ initialPosts }: PostListProps) {
       post.content.toLowerCase().includes(keyword.toLowerCase())
   );
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string, userId: string) => {
+    if (!user || user.id !== userId) {
+      alert("삭제 권한이 없습니다.");
+      return;
+    }
+
     if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
-      // 실제 프로젝트에서는 여기서 Supabase 삭제 요청을 보내야 함 (Ch10)
+      const supabase = createClient();
+      const { error } = await supabase.from("posts").delete().eq("id", id);
+      
+      if (error) {
+        alert("삭제 중 오류가 발생했습니다.");
+        return;
+      }
+
       setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
     }
   };
@@ -45,7 +60,7 @@ export default function PostList({ initialPosts }: PostListProps) {
                   </h2>
                 </Link>
                 <button
-                  onClick={() => handleDelete(post.id)}
+                  onClick={() => handleDelete(post.id, post.user_id)}
                   aria-label="게시글 삭제"
                   title="삭제"
                   className="text-gray-300 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-2 rounded-lg transition-colors flex-shrink-0"
