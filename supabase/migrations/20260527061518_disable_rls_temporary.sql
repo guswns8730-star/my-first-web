@@ -1,0 +1,3 @@
+-- 임시로 보안망을 해제하여 챕터 10 상태로 복구합니다.
+ALTER TABLE posts DISABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles DISABLE ROW LEVEL SECURITY;
