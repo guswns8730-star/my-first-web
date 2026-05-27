@@ -25,9 +25,10 @@ export default function LoginPage() {
     setLoading(false);
 
     if (error) {
-      setErrorMsg(error.message); // 화면에 에러 표시
+      const { getErrorMessage } = await import("@/lib/error-message");
+      setErrorMsg(getErrorMessage(error));
     } else {
-      router.push("/posts"); // 성공 시 /posts 로 이동
+      router.push("/posts");
     }
   };
 

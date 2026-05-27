@@ -31,9 +31,13 @@
 - **수정 (Update)**: `/posts/[id]/edit`에서 `update().eq('id', postId)`
 - **삭제 (Delete)**: `delete().eq('id', postId)`
 
-## 5. 보안 정책 (Ch10 기준)
-- **클라이언트**: `useAuth()` 기반으로 작성자(`user.id === post.user_id`)에게만 수정/삭제 버튼 노출 (UX 처리)
-- **미들웨어**: `middleware.ts`에서 `/posts/new` 및 `/edit` 경로 접근 차단
-- **서버 보안**: 실제 데이터 조작 권한 강제는 **Ch11 RLS(Row Level Security)**에서 처리 예정
+## 5. 보안 정책 (Ch11 기준)
+- **UX 계층 (클라이언트)**: `useAuth()` 기반으로 작성자(`user.id === post.user_id`)에게만 수정/삭제 버튼 노출
+- **접근 계층 (미들웨어)**: `middleware.ts`에서 비인증 사용자의 `/posts/new` 및 `/edit` 경로 접근 차단
+- **데이터 계층 (RLS)**: Supabase Row Level Security를 통해 실제 DB CRUD 권한 강제
+  - **SELECT**: `true` (누구나 조회 가능)
+  - **INSERT**: `auth.uid() = user_id` (로그인 사용자 본인 글만 작성 가능)
+  - **UPDATE**: `auth.uid() = user_id` (작성자만 수정 가능)
+  - **DELETE**: `auth.uid() = user_id` (작성자만 삭제 가능)
 
-_마지막 업데이트: 2026-05-20 (Chapter 10 완료)_
+_마지막 업데이트: 2026-05-27 (Chapter 11 RLS 작업 시작)_

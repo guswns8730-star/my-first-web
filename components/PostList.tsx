@@ -45,9 +45,22 @@ export default function PostList({ initialPosts }: PostListProps) {
     <div>
       <SearchBar value={keyword} onChange={(e) => setKeyword(e.target.value)} />
       
-      {filteredPosts.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">
-          <p className="text-lg">검색어와 일치하는 게시글이 없습니다. 첫 글을 작성해 보세요!</p>
+      {posts.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-32 bg-gray-50 rounded-[3rem] border-2 border-dashed border-gray-200 animate-in fade-in zoom-in duration-700">
+          <div className="text-6xl mb-6">📝</div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">아직 작성된 글이 없습니다</h3>
+          <p className="text-gray-500 mb-8 max-w-xs text-center">멋진 소식이나 생각을 가장 먼저 공유해 보세요!</p>
+          <Link href="/posts/new">
+            <button className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-gray-800 transition-all shadow-xl hover:shadow-2xl active:scale-95">
+              첫 게시글 작성하기
+            </button>
+          </Link>
+        </div>
+      ) : filteredPosts.length === 0 ? (
+        <div className="text-center py-24 bg-white rounded-3xl border border-gray-100 shadow-sm animate-in fade-in duration-500">
+          <div className="text-4xl mb-4">🔍</div>
+          <p className="text-xl font-medium text-gray-900 mb-2">검색 결과가 없습니다</p>
+          <p className="text-gray-500">다른 키워드로 검색해 보시겠어요?</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

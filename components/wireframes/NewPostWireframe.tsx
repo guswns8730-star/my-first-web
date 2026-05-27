@@ -14,26 +14,42 @@ export default function NewPostWireframe() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ title?: string; content?: string; server?: string }>({});
+
+  const validate = () => {
+    const newErrors: { title?: string; content?: string } = {};
+    if (!title.trim()) {
+      newErrors.title = "제목을 입력해 주세요.";
+    } else if (title.trim().length < 2) {
+      newErrors.title = "제목은 최소 2자 이상이어야 합니다.";
+    }
+
+    if (!content.trim()) {
+      newErrors.content = "내용을 입력해 주세요.";
+    } else if (content.trim().length < 10) {
+      newErrors.content = "내용은 최소 10자 이상 입력해 주세요.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
     
     if (!user) {
-      alert("로그인이 필요합니다.");
-      router.push("/login");
+      router.push("/login"); // 미들웨어가 처리하지만 추가 안전망
       return;
     }
 
-    if (!title.trim() || !content.trim()) {
-      alert("제목과 본문을 모두 입력하세요.");
-      return;
-    }
+    if (!validate()) return;
 
     setLoading(true);
     const supabase = createClient();
 
     try {
-      // 1. 프로필이 있는지 먼저 확인 (없으면 생성 시도)
+      // 1. 프로필 확인/생성
       const { data: profile } = await supabase
         .from("profiles")
         .select("id")
@@ -49,19 +65,19 @@ export default function NewPostWireframe() {
 
       // 2. 게시글 저장
       const { error } = await supabase.from("posts").insert({
-        title,
-        content,
+        title: title.trim(),
+        content: content.trim(),
         user_id: user.id,
       });
 
       if (error) throw error;
 
-      alert("게시글이 성공적으로 저장되었습니다!");
       router.push("/posts");
       router.refresh();
-    } catch (error: any) {
-      console.error("저장 오류:", error);
-      alert(`저장 중 오류가 발생했습니다: ${error.message}`);
+    } catch (err: any) {
+      console.error("저장 오류:", err);
+      const { getErrorMessage } = await import("@/lib/error-message");
+      setErrors({ server: getErrorMessage(err) });
     } finally {
       setLoading(false);
     }
@@ -77,6 +93,12 @@ export default function NewPostWireframe() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <CardContent className="p-6">
+            {errors.server && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-xl text-sm font-medium animate-in fade-in slide-in-from-top-1">
+                {errors.server}
+              </div>
+            )}
+
             <div className="mb-6">
               <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2">제목</label>
               <Input
@@ -84,9 +106,10 @@ export default function NewPostWireframe() {
                 placeholder="관심을 끌만한 제목을 적어주세요"
                 value={title}
                 onChange={(e: any) => setTitle(e.target.value)}
-                className="w-full text-lg py-6"
+                className={`w-full text-lg py-6 rounded-xl transition-all ${errors.title ? 'border-red-500 focus-visible:ring-red-500/20' : ''}`}
                 disabled={loading}
               />
+              {errors.title && <p className="mt-2 text-sm text-red-500 font-medium">{errors.title}</p>}
             </div>
 
             <div>
@@ -97,9 +120,10 @@ export default function NewPostWireframe() {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 disabled={loading}
-                className="w-full rounded-lg border border-input px-4 py-3 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all min-h-[300px] text-base"
+                className={`w-full rounded-xl border px-4 py-3 resize-y focus:outline-none focus:ring-2 transition-all min-h-[300px] text-base ${errors.content ? 'border-red-500 focus:ring-red-500/20' : 'border-input focus:ring-blue-500/20 focus:border-blue-500'}`}
                 placeholder="내용을 자유롭게 작성하세요..."
               />
+              {errors.content && <p className="mt-2 text-sm text-red-500 font-medium">{errors.content}</p>}
             </div>
           </CardContent>
 

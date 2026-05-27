@@ -28,11 +28,12 @@ export default function SignupPage() {
     setLoading(false);
 
     if (error) {
-      setErrorMsg(error.message); // 실패 시 화면에 에러 표시
+      const { getErrorMessage } = await import("@/lib/error-message");
+      setErrorMsg(getErrorMessage(error));
     } else {
-      setSuccessMsg("가입 완료. 로그인 페이지로 이동합니다."); // 성공 메시지 표시
+      setSuccessMsg("가입 완료. 로그인 페이지로 이동합니다.");
       setTimeout(() => {
-        router.push("/login"); // 성공하면 /login으로 이동
+        router.push("/login");
       }, 1500); 
     }
   };
