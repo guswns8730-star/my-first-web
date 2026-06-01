@@ -23,10 +23,11 @@ export async function PUT(req: Request, context: any) {
     }
 
     const body = await req.json();
+    console.log("[DEBUG] PUT /api/posts/[id] body:", body);
     const { title, content } = body;
 
     if (!title && !content) {
-      return NextResponse.json({ error: "수정할 값이 없습니다." }, { status: 400 });
+      return NextResponse.json({ error: "수정할 값이 없습니다.", received: body }, { status: 400 });
     }
 
     // 작성자 확인

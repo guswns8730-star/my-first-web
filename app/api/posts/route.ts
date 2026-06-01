@@ -16,10 +16,11 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
+    console.log("[DEBUG] POST /api/posts body:", body);
     const { title, content } = body;
 
     if (!title || !content) {
-      return NextResponse.json({ error: "필수 항목 누락" }, { status: 400 });
+      return NextResponse.json({ error: "필수 항목 누락", received: body }, { status: 400 });
     }
 
     const { data, error } = await supabase
