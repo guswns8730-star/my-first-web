@@ -1,18 +1,23 @@
+import PostForm from "@/components/PostForm";
 import { getPostById } from "@/lib/posts";
-import EditPostForm from "@/components/EditPostForm";
-import { notFound } from "next/navigation";
 
 export default async function EditPostPage({ params }: { params: { id: string } }) {
-  const { id } = params;
-  const post = await getPostById(id);
+  const post = await getPostById(params.id);
 
   if (!post) {
-    return notFound();
+    return (
+      <div className="py-24 text-center">
+        <p className="text-lg">게시글을 찾을 수 없습니다.</p>
+      </div>
+    );
   }
 
   return (
-    <div className="py-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <EditPostForm post={post} />
-    </div>
+    <main className="py-12">
+      <h1 className="text-3xl font-bold mb-6">게시글 수정</h1>
+      {/* PostForm will use PUT to /api/posts/[id] when initial.id is provided */}
+      <PostForm initial={{ id: post.id, title: post.title, content: post.content }} />
+    </main>
   );
 }
+ 

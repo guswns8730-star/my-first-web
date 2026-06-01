@@ -1,64 +1,42 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
 
-interface PostActionsProps {
-  postId: string;
-  userId: string;
-}
-
-export default function PostActions({ postId, userId }: PostActionsProps) {
-  const router = useRouter();
+export default function PostActions({ postId, userId }: { postId: string; userId: string }) {
   const { user } = useAuth();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-  // 본인의 글이 아니면 버튼을 보여주지 않음 (UX)
-  if (!user || user.id !== userId) return null;
+  const isAuthor = user?.id === userId;
 
-  const handleDelete = async () => {
-    if (!window.confirm("정말로 이 게시글을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) {
-      return;
-    }
-
-    setIsDeleting(true);
-    const supabase = createClient();
-
+  async function handleDelete() {
+    if (!confirm("정말로 이 게시글을 삭제하시겠습니까?")) return;
+    setLoading(true);
     try {
-      const { error } = await supabase
-        .from("posts")
-        .delete()
-        .eq("id", postId);
-
-      if (error) throw error;
-
-      alert("성공적으로 삭제되었습니다.");
+      const res = await fetch(`/api/posts/${postId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("삭제 실패");
       router.push("/posts");
-      router.refresh();
-    } catch (error: any) {
-      alert(`삭제 도중 오류가 발생했습니다: ${error.message}`);
-      setIsDeleting(false);
+    } catch (err) {
+      console.error(err);
+      alert("삭제 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
     }
-  };
+  }
+
+  if (!isAuthor) return null;
 
   return (
-    <div className="flex gap-3">
-      <Link href={`/posts/${postId}/edit`}>
-        <Button variant="outline" className="rounded-xl border-gray-200 hover:bg-gray-50 font-semibold px-6">
-          수정
-        </Button>
+    <div className="flex items-center gap-3">
+      <Link href={`/posts/${postId}/edit`} className="text-sm text-blue-600 hover:underline font-medium">
+        수정
       </Link>
-      <Button 
-        variant="destructive" 
-        onClick={handleDelete} 
-        disabled={isDeleting}
-        className="rounded-xl bg-red-50 text-red-600 hover:bg-red-100 border-none shadow-none font-semibold px-6"
-      >
-        {isDeleting ? "삭제 중..." : "삭제"}
+      <Button variant="destructive" size="sm" onClick={handleDelete} disabled={loading}>
+        삭제
       </Button>
     </div>
   );

@@ -15,6 +15,7 @@ export default function PostList({ initialPosts }: PostListProps) {
   const { user } = useAuth();
   const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [keyword, setKeyword] = useState("");
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
 
   const filteredPosts = posts.filter(
     (post) =>
@@ -28,16 +29,28 @@ export default function PostList({ initialPosts }: PostListProps) {
       return;
     }
 
-    if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
-      const supabase = createClient();
-      const { error } = await supabase.from("posts").delete().eq("id", id);
-      
-      if (error) {
-        alert("삭제 중 오류가 발생했습니다.");
+    if (!window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) return;
+
+    try {
+      setDeletingIds((prev) => new Set(prev).add(id));
+      const res = await fetch(`/api/posts/${id}`, { method: "DELETE" });
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data?.error || "삭제 중 오류가 발생했습니다.");
         return;
       }
 
       setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert("삭제 중 오류가 발생했습니다.");
+    } finally {
+      setDeletingIds((prev) => {
+        const s = new Set(prev);
+        s.delete(id);
+        return s;
+      });
     }
   };
 
@@ -78,9 +91,16 @@ export default function PostList({ initialPosts }: PostListProps) {
                   title="삭제"
                   className="text-gray-300 hover:text-red-500 bg-gray-50 hover:bg-red-50 p-2 rounded-lg transition-colors flex-shrink-0"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  {deletingIds.has(post.id) ? (
+                    <svg className="animate-spin h-4 w-4 text-red-500" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  )}
                 </button>
               </div>
               
