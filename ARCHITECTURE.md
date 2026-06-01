@@ -27,9 +27,9 @@
 
 ## 4. 데이터 흐름 (CRUD 패턴)
 - **조회 (Read)**: 서버 컴포넌트에서 `lib/posts.ts`의 `getPosts()`, `getPostById()` 호출 (SSR)
-- **생성 (Create)**: `/posts/new`에서 `user.id`를 포함하여 `supabase.from('posts').insert()`
-- **수정 (Update)**: `/posts/[id]/edit`에서 `update().eq('id', postId)`
-- **삭제 (Delete)**: `delete().eq('id', postId)`
+- **생성 (Create)**: `/posts/new`는 클라이언트에서 작성된 데이터를 전송하되, 서버 API(`app/api/posts`)가 클라이언트가 보낸 `user_id`를 신뢰하지 않고 서버 세션의 `user.id`로 `user_id`를 설정하여 삽입합니다.
+- **수정 (Update)**: `/posts/[id]/edit` 요청은 클라이언트가 보내는 데이터로 수정하지만, 서버 API는 요청자의 세션을 확인해 작성자인 경우에만 `update().eq('id', postId)`를 수행합니다.
+- **삭제 (Delete)**: 서버 API에서 세션 검증 후 작성자인 경우에만 `delete().eq('id', postId)`를 수행합니다.
 
 ## 5. 보안 정책 (Ch11 기준)
 - **UX 계층 (클라이언트)**: `useAuth()` 기반으로 작성자(`user.id === post.user_id`)에게만 수정/삭제 버튼 노출
@@ -40,4 +40,4 @@
   - **UPDATE**: `auth.uid() = user_id` (작성자만 수정 가능)
   - **DELETE**: `auth.uid() = user_id` (작성자만 삭제 가능)
 
-_마지막 업데이트: 2026-05-27 (Chapter 11 RLS 작업 시작)_
+_마지막 업데이트: 2026-06-01 (서버측 인증 보강 적용)_
