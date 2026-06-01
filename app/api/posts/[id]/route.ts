@@ -1,20 +1,42 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient as createServerClient } from "@/lib/supabase/server";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+async function resolveIdFromContext(context: any) {
+  const params = context?.params;
+  const id = params?.id ?? (typeof params === "function" ? (await params()).id : undefined) ?? (await params)?.id;
+  return id;
+}
 
 export async function PUT(req: Request, context: any) {
   try {
-    const params = context?.params;
-    const id = params?.id ?? (typeof params === "function" ? (await params()).id : undefined) ?? (await params)?.id;
+    const supabase = await createServerClient();
+    const id = await resolveIdFromContext(context);
+
+    // 인증된 사용자 확인
+    const {
+      data: { user },
+      error: userErr,
+    } = await supabase.auth.getUser();
+
+    if (userErr || !user) {
+      return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
+    }
+
     const body = await req.json();
     const { title, content } = body;
 
     if (!title && !content) {
       return NextResponse.json({ error: "수정할 값이 없습니다." }, { status: 400 });
+    }
+
+    // 작성자 확인
+    const { data: existing, error: fetchErr } = await supabase.from("posts").select("user_id").eq("id", id).single();
+    if (fetchErr || !existing) {
+      return NextResponse.json({ error: "게시글을 찾을 수 없습니다." }, { status: 404 });
+    }
+
+    if (existing.user_id !== user.id) {
+      return NextResponse.json({ error: "권한이 없습니다." }, { status: 403 });
     }
 
     const { data, error } = await supabase
@@ -34,8 +56,27 @@ export async function PUT(req: Request, context: any) {
 
 export async function DELETE(_req: Request, context: any) {
   try {
-    const params = context?.params;
-    const id = params?.id ?? (typeof params === "function" ? (await params()).id : undefined) ?? (await params)?.id;
+    const supabase = await createServerClient();
+    const id = await resolveIdFromContext(context);
+
+    const {
+      data: { user },
+      error: userErr,
+    } = await supabase.auth.getUser();
+
+    if (userErr || !user) {
+      return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
+    }
+
+    // 작성자 확인
+    const { data: existing, error: fetchErr } = await supabase.from("posts").select("user_id").eq("id", id).single();
+    if (fetchErr || !existing) {
+      return NextResponse.json({ error: "게시글을 찾을 수 없습니다." }, { status: 404 });
+    }
+
+    if (existing.user_id !== user.id) {
+      return NextResponse.json({ error: "권한이 없습니다." }, { status: 403 });
+    }
 
     const { error } = await supabase.from("posts").delete().eq("id", id);
 
